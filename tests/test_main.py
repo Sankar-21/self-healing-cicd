@@ -18,5 +18,4 @@ def test_add():
     assert r.json()["result"] == 7
 
 
-def test_intentional_fail():
-    assert 1 == 2  # intentional failure    
+    
