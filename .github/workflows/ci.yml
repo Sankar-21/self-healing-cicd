@@ -25,6 +25,9 @@ jobs:
       - name: Run tests
         run: pytest tests/ -v
 
+      - name: Build Docker image
+        run: docker build -t self-healing-cicd .
+
       - name: Notify on failure
         if: failure()
         run: echo "PIPELINE_FAILED=true" >> $GITHUB_ENV

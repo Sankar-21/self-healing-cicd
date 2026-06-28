@@ -34,12 +34,18 @@ def get_latest_failed_run():
 
 def get_run_logs(run_id):
     url = f"https://api.github.com/repos/{OWNER}/{REPO}/actions/runs/{run_id}/logs"
-    res = requests.get(url, headers=HEADERS, allow_redirects=True)
-    # GitHub returns a zip redirect; we get the raw text from redirect
-    if res.status_code == 302 or res.url != url:
-        log_res = requests.get(res.url)
-        return log_res.text
-    return res.text
+    try:
+        res = requests.get(url, headers=HEADERS, allow_redirects=True, timeout=10)
+        if res.status_code == 302 or res.url != url:
+            log_res = requests.get(res.url, timeout=10)
+            return log_res.text
+        return res.text
+    except requests.exceptions.Timeout:
+        print("⚠️  Log fetch timed out — using run metadata for classification.")
+        return f"run {run_id} failed"
+    except Exception as e:
+        print(f"⚠️  Log fetch error: {e}")
+        return f"run {run_id} failed"
 
 def classify_failure(log_text):
     category, confidence = predict(log_text)
