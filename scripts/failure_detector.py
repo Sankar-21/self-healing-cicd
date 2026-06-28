@@ -2,7 +2,7 @@ import os
 import re
 import requests
 from dotenv import load_dotenv
-
+from rca_classifier import predict
 load_dotenv()
 
 TOKEN = os.getenv("GITHUB_TOKEN")
@@ -42,10 +42,9 @@ def get_run_logs(run_id):
     return res.text
 
 def classify_failure(log_text):
-    for pattern, category in FAILURE_PATTERNS:
-        if re.search(pattern, log_text, re.IGNORECASE):
-            return category
-    return "unknown"
+    category, confidence = predict(log_text)
+    print(f"🧠 ML confidence: {confidence}%")
+    return category
 
 def detect():
     print("🔍 Checking for failed pipeline runs...")
