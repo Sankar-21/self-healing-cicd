@@ -16,3 +16,7 @@ def test_health():
 def test_add():
     r = client.get("/add?a=3&b=4")
     assert r.json()["result"] == 7
+
+
+def test_intentional_fail():
+    assert 1 == 2  # intentional failure    
